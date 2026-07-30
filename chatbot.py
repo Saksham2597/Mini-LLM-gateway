@@ -29,7 +29,7 @@ def call_with_fallbacks(model_chain, messages):
         try:
             return completion(model=model, messages=messages)
         except Exception as e:
-            print(f"   ⚠️  {model} failed ({type(e).__name__}), switching to next tier...")
+            print(f"    ⚠️  Model {model} failed ({type(e).__name__}), switching to next tier...")
             last_error = e
             continue
     raise last_error
@@ -38,12 +38,12 @@ def smart_chat(user_query: str):
     task = classify_task(user_query)
     model_chain = ROUTING_CHAINS.get(task, ROUTING_CHAINS["general"])
 
-    start = time.time()
+    start_time = time.time()
     response = call_with_fallbacks(
         model_chain=model_chain,
         messages=[{"role": "user", "content": user_query}]
     )
-    latency = time.time() - start
+    latency = time.time() - start_time
 
     try:
         cost = completion_cost(completion_response=response)
